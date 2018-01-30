@@ -1,0 +1,83 @@
+#!/usr/bin/perl -w
+
+use warnings;
+use strict;
+use Pod_Usage;
+use Getopt::Long;
+use Tie::File;
+
+# Declare some variables
+## DB variables
+### We should be using a read-only account to retrieve information from the
+### database
+### ie the firechief account
+my $dbhost;
+my $db_username;
+my $db_password;
+
+## Relating to the input and output files used by this script
+my $infile;
+my $outfile;
+
+## Relating to the hosts for which we are requesting information and the URIs
+## which we will be using to warm the cache.
+my $number_of_uri;
+my $host;
+my $pool;
+my $pod;
+my %active_hosts;
+
+# Defines
+# If the user doesn't assign values through the provided options,
+# assign some sane default values.
+unless ( $number_of_uri ) {
+  $number_of_uri=10;
+};
+unless ( $infile ) {
+  $infile="infile.txt"
+};
+unless ( $outfile ) [
+  $outfile="outfile.txt"
+};
+
+
+
+
+retrieve hosts from gccmdb using pacific.pl and ???
+retrieve, from active hosts, the top N users
+
+sitpagehit v importer
+sitpagehit allows us to collect the most active URLs at the pod level. importer doesn't allow this.
+* Ask a DBA to create a query to grab the top N URIs from HOST
+
+We need to collect the Host header from the top N 
+We need to hit that URL at the webcache layer
+Servers should be receiving cache from the top of the pool
+
+What information do we need to collect to create a 'pre-cache'?
+* We need to collect the Host header for the top N URIs being accessed on the
+* active host. 
+
+What information needs to be in the cache?
+
+What format is most effective for storing the 'pre-cache'?
+* We will store the pre-cache in a flat text file which will be read by the
+* pre-caching program at runtime.
+
+Where will the information for the 'pre-cache' be stored?
+* we will store the pre-cache information in flat text files in a subdirectory
+* of the current working directory.
+
+Active v inactive?
+
+=pod
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head2 AUTHOR
+
+Spencer J Sinn <ssinn@digitalriver.com>
+
+=cut

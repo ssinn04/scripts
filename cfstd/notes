@@ -1,0 +1,23 @@
+schema
+
+CREATE TABLE nodeprops
+                                (hostname VARCHAR(256)
+                                ,instancename VARCHAR(256)
+                                ,stagename VARCHAR(256)
+                                ,datacenter VARCHAR(32)
+                                ,environment VARCHAR(128)
+                                ,node VARCHAR(32)
+                                ,activegroup VARCHAR(256))
+                                ,priority INTEGER
+                                ,arch VARCHAR(256)
+                                );
+
+hostname - the fqdn of the system
+instancename - the username asssociated with the server ie cfsapp01,ocoapp02,cfswps01
+stagename - ie dht prd uis
+datacenter - the datacenter in which the system lives
+environment - the systems environment ie dev prd test
+node - unused
+activegroup - E1 or E2
+priority - appllication bounce order, from highest (1) to lowest (999)
+arch - SunOS, CentOS, SL6
