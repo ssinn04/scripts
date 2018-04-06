@@ -18,9 +18,9 @@ use DBI;
 ### database
 ### ie the firechief account
 my $dbhost;
-my $datasource="dbi:Oracle:host=dc2db41.dc2.digitalriver.com;port=1584;sid=ordprd22";
-my $db_username="firechief";
-my $db_password="spotdog21";
+my $datasource="dbi:Oracle:host=<hostname>;port=<port>;sid=<sid>";
+my $db_username="<username>";
+my $db_password="<password>";
 my @row;
 
 ## Date
@@ -176,30 +176,6 @@ foreach $line (@uri_list) {
 
 __END__
 
-#sitpagehit v importer
-#sitpagehit allows us to collect the most active URLs at the pod level. importer doesn't allow this.
-#* Ask a DBA to create a query to grab the top N URIs from HOST
-#
-#We need to collect the Host header from the top N 
-#We need to hit that URL at the webcache layer
-#Servers should be receiving cache from the top of the pool
-#
-#What information do we need to collect to create a 'pre-cache'?
-#* We need to collect the Host header for the top N URIs being accessed on the
-#* active host. 
-#
-#What information needs to be in the cache?
-#
-#What format is most effective for storing the 'pre-cache'?
-#* We will store the pre-cache in a flat text file which will be read by the
-#* pre-caching program at runtime.
-#
-#Where will the information for the 'pre-cache' be stored?
-#* we will store the pre-cache information in flat text files in a subdirectory
-#* of the current working directory.
-#
-#Active v inactive?
-
 =pod
 
 =head1 NAME
@@ -272,19 +248,3 @@ Retrieves the top 10 most requested URIs for he hosts listed in foo and writes t
 Spencer J Sinn <ssinn@digitalriver.com>
 
 =cut
-
-my $infile="outfile.txt";
-my $line;
-my @uri_list;
-my @uri_to_split;
-my $uri_to_grab;
-
-tie @uri_list, 'Tie::File', $infile
-  or die "Couldn't open $infile: $!";
-
-# print out the array. We only need the first field.
-foreach $line (@uri_list) {
-  @uri_to_split = split(/\s+/, $line);
-  $uri_to_grab = $uri_to_split[0];
-  print "$uri_to_grab"."\n";
-}

@@ -15,7 +15,7 @@ my $datacenter;
 my $activegroup;
 my $environment;
 my $node="";
-my $dbfile="./cfstd.db";
+my $dbfile="<dbname>";
 my $sthUpdateNodeprops;
 my $sthEditNode;
 my @NodeInfo;
@@ -60,17 +60,17 @@ until ( $todo eq '0' ) {
 }
 
 sub NewNode {
-  print "\nEnter the fqdn ie cfsapp00004.c031.digitalriverws.net\n";
+  print "\nEnter the fqdn\n";
   chomp($hostname=<STDIN>);
-  print "\ninstancename ie cfsapp01\n";
+  print "\ninstancename\n";
   chomp($instancename=<STDIN>);
-  print "\nstagename ie dht scn uis\n";
+  print "\nstagename\n";
   chomp($stagename=<STDIN>);
-  print "\ndatacenter ie dc2, c031, dc7\n";
+  print "\ndatacenter\n";
   chomp($datacenter=<STDIN>);
-  print "\nenvironment ie prd dev sys\n";
+  print "\nenvironment\n";
   chomp($environment=<STDIN>);
-  print "\nactivegroup ie E1, E2\n";
+  print "\nactivegroup\n";
   chomp($activegroup=<STDIN>);
 
     $sthUpdateNodeprops=$dbh->prepare("
@@ -89,7 +89,7 @@ sub NewNode {
 
 sub EditNode {
   # Get the hostname from user
-  print "\nEnter the fqdn ie cfsapp00004.c031.digitalriverws.net\n";
+  print "\nEnter the fqdn\n";
   chomp($hostname=<STDIN>);
 
   # SELECT hostname

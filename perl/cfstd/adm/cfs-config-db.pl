@@ -8,7 +8,7 @@ use DBI;
 
 
 # Define some values
-my $dbfile="../cfstd.db";
+my $dbfile="<dbname>";
 
 # Declare some variables
 my $auto;
@@ -72,43 +72,43 @@ GetOptions (
 # Interactive - good for onesy-twosy
 # get hostname
 unless ( $hostname ) {
-  print "Enter the hostname. This should be the fully qualified domain name ie dc2cfsdnsprd002.dc2.digitalriver.com:";
+  print "Enter the hostname. This should be the fully qualified domain name :";
   chomp ($hostname=<STDIN>);
 };
 
 # get instancename
 unless ( $instancename ) {
-  print "Enter the instancename ie cfsapp01, cfswps01, dnspxapp:";
+  print "Enter the instancename:";
   chomp ($instancename=<STDIN>);
 };
 
 # get stagename w hints
 unless ( $stagename ) {
-  print "Enter the stagename name ie dev, prd, sys, all:";
+  print "Enter the stagename name:";
   chomp ($stagename=<STDIN>);
 };
 
 # get datacenter
 unless ( $datacenter ) {
-  print "Enter the datacenter ie dc1, dc2, c031, dc7, all:";
+  print "Enter the datacenter:";
   chomp ($datacenter=<STDIN>);
 };
 
 # get activegroup
 unless ( $activegroup ) {
-  print "Enter the active group ie E1, E2, all:";
+  print "Enter the active group:";
   chomp ($activegroup=<STDIN>);
 };
 
 # get environment
 unless ( $environment ) {
-  print "Enter the environment is blah:";
+  print "Enter the environment:";
   chomp ($environment=<STDIN>);
 };
 
 # get node
 unless ( $node ) {
-  print "Enter the node ie blah:";
+  print "Enter the node:";
   chomp ($node=<STDIN>);
 };
 
@@ -140,10 +140,3 @@ $sthUpdateNodeprops=$dbh->prepare("
 $sthUpdateNodeprops->execute();
 
 __END__
-  'A|auto'            => \$auto,
-  'B|batch'           => \$batch,
-  'i|instancename=s'  => \$instancename,
-  'h|hostname=s'      => \$hostname,
-  's|stagename=s'     => \$stagename,
-  'd|datacenter=s'    => \$datacenter,
-  'a|activegroup=s'   => \$activegroup,

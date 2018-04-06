@@ -6,11 +6,11 @@ use DBI;
 
 
 # Define some values
-my $dbname="cfsprd11";
-my $dbhost="cfsdbprd022001.c022.digitalriverws.net";
-my $dbport="1580";
-my $dbuser="cfsuser1";
-my $dbpassword="69d5a5a4dfe54be1df8592078de921bc";
+my $dbname="<dbname>";
+my $dbhost="<dbhost>";
+my $dbport="<dbport>";
+my $dbuser="<dbuser>";
+my $dbpassword="<dbpassword>";
 
 # Declare some variables
 my $sthSearchNodeprops;

@@ -12,7 +12,7 @@ use Pod::Usage;
 
 
 # Define some values
-my $dbfile="./cfstd.db";
+my $dbfile="<dbname>";
 
 # Declare some variables
 my $datacenter;

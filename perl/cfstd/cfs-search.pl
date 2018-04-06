@@ -8,7 +8,9 @@ use DBI;
 
 
 # Define some values
-my $dbfile="cfstd.db";
+my $dbname="<dbname>";
+my $dbhost="<dbhost>";
+my $dbport="<dbport>";
 
 # Declare some variables
 my $auto;
@@ -30,9 +32,12 @@ my $Qenvironment;
 my $Qnode;
 my $query="SELECT hostname, instancename FROM nodeprops ";
 my $verb;
+my $help;
+my $schema;
 my $sthSearchDB;
 my @row;
 my $row;
+my $object;
 
 =pod
 
@@ -52,15 +57,19 @@ This is used to search the system database. It requires at least the datacenter,
 
 =item B<-i,  --instancename>  - cfsapp01, cfsapp02, dnspxapp, etc
 
-=item B<-h,  --hostname>      - The FQDN of the system. Everything keys off this
+=item B<-H,  --hostname>      - Returns the FQDN of the system only.
 
-=item B<-s,  --stagename>     - dev, prd, int, sys, all
+=item B<-s,  --stagename>     - dht, dns, dpe, ets
 
 =item B<-d,  --datacenter>    - The datacenter (dc1, dc2, c031, dc7, etc) of the system
 
 =item B<-g,  --activegroup>   - The E1 or E2 instance of this system
 
-=item B<-e,  --environment>   - dev, prd, int, sys, all
+=item B<-e,  --environment>   - dev, prd, int, etc
+
+=item B<-h, --help>           - Queries the database for available options
+
+=item B<-S, --schema          - Queries the databse directly for stagename, datacenter,
 
 =back
 
@@ -75,14 +84,21 @@ GetOptions (
   'A|auto'            => \$auto,
   'B|batch'           => \$batch,
   'i|instancename=s'  => \$instancename,
-  'h|hostname=s'      => \$hostname,
+  'H|hostname'        => \$hostname,
   's|stagename=s'     => \$stagename,
   'd|datacenter=s'    => \$datacenter,
   'g|activegroup=s'   => \$activegroup,
   'e|environment=s'   => \$environment,
   'n|node=s'          => \$node,
+  'S|schema'          => \$schema,
+  'h|help'            => \$help,
 ) or warn pod2usage(2);
 
+# help
+if ( $help) {
+  pod2usage(2);
+  exit
+}
 
 # get datacenter
 if ( $datacenter eq "all" ) {
@@ -152,19 +168,47 @@ if ( $node ) {
 };
 
 # Build the query
-$query = $query.$Qdatacenter.$Qstagename.$Qactivegroup.$Qenvironment.$Qinstancename;
-print "query = $query\n";
+$query = $query.$Qdatacenter.$Qstagename.$Qactivegroup.$Qenvironment.$Qinstancename." ORDER BY priority ASC";
 
 # get propname
 # get propvalue
 
 # Batch
 
+# Help
+  if ( $schema ) {
+
+  # Connect
+  my $dbh = DBI->connect(
+        "dbi:mysql:dbname=$dbname:$dbhost:$dbport",
+        "<dbuser>",
+        "<dbpassword>",
+        { RaiseError => 1 },
+        ) or die "Cannot connect: $DBI::errstr";
+
+        my @schema = ("activegroup", "datacenter", "environment", "stagename",);
+        foreach $object (@schema) {
+          $query = "SELECT DISTINCT $object FROM nodeprops;";
+          print "== $object ==\n";
+          # Build query based on switches
+          $sthSearchDB=$dbh->prepare("
+            $query
+            ");
+          # Query database
+          $sthSearchDB->execute();
+          # Subroutines
+          while ( @row = $sthSearchDB->fetchrow_array() ) {
+              print "$row[0]\n";
+          }
+        }
+  exit;
+  }
+
 # Connect
 my $dbh = DBI->connect(
-      "dbi:SQLite:dbname=$dbfile",
-      "",
-      "",
+      "dbi:mysql:dbname=$dbname:$dbhost:$dbport",
+      "<dbuser>",
+      "<dbpassword>",
       { RaiseError => 1 },
       ) or die "Cannot connect: $DBI::errstr";
 
@@ -178,7 +222,11 @@ $sthSearchDB->execute();
 
 # Subroutines
 while ( @row = $sthSearchDB->fetchrow_array() ) {
-  print "$row[1]\@$row[0]\n";
+  if ( $hostname ) {
+    print "$row[0]\n";
+  } else {
+    print "$row[1]\@$row[0]\n";
+  }
 }
 
 # Does this record exist?

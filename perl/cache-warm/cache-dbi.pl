@@ -18,9 +18,9 @@ use FileHandle;
 ### database
 ### ie the firechief account
 my $dbhost;
-my $datasource="dbi:Oracle:host=dc2db41.dc2.digitalriver.com;port=1584;sid=ordprd22";
-my $db_username="firechief";
-my $db_password="spotdog21";
+my $datasource="dbi:Oracle:host=<hostname>;port=<port>;sid=<sid>";
+my $db_username="<username>";
+my $db_password="<password>";
 my @row;
 
 ## Relating to the input and output files used by this script
@@ -102,7 +102,7 @@ my $sth = $dbh->prepare("
         sit_page_hit
     WHERE
         creation_date >= ( SYSDATE - 1/24 )
-    AND URL LIKE '%microsoft%'
+    AND URL LIKE '%<searchstring>%'
     GROUP BY URL
     ORDER BY
       url_count DESC
@@ -126,30 +126,6 @@ foreach $host (@host) {
 
 
 __END__
-
-#sitpagehit v importer
-#sitpagehit allows us to collect the most active URLs at the pod level. importer doesn't allow this.
-#* Ask a DBA to create a query to grab the top N URIs from HOST
-#
-#We need to collect the Host header from the top N 
-#We need to hit that URL at the webcache layer
-#Servers should be receiving cache from the top of the pool
-#
-#What information do we need to collect to create a 'pre-cache'?
-#* We need to collect the Host header for the top N URIs being accessed on the
-#* active host. 
-#
-#What information needs to be in the cache?
-#
-#What format is most effective for storing the 'pre-cache'?
-#* We will store the pre-cache in a flat text file which will be read by the
-#* pre-caching program at runtime.
-#
-#Where will the information for the 'pre-cache' be stored?
-#* we will store the pre-cache information in flat text files in a subdirectory
-#* of the current working directory.
-#
-#Active v inactive?
 
 =pod
 
@@ -223,30 +199,3 @@ Retrieves the top 10 most requested URIs for he hosts listed in foo and writes t
 Spencer J Sinn <ssinn@digitalriver.com>
 
 =cut
-
-CLEAR BREAKS
-CLEAR COMPUTES
-CLEAR COLUMNS
-
-SET VERIFY OFF
-SET PAGESIZE 100
-SET LINESIZE 120
-
-COLUMN page_hits FORMAT 999,999
-COLUMN avg_latency FORMAT 999.999
-
-COMPUTE AVG LABEL 'Average Latency' OF avg_latency ON REPORT
-BREAK ON REPORT
-
-SELECT
-        TO_CHAR( TRUNC( creation_date, 'MI' ), 'YYYY-MM-DD HH24:MI:SS' ) AS timestamp,
-        COUNT( * ) AS page_hits,
-        ( AVG( elapsed_millis ) / 1000 ) AS avg_latency
-FROM
-        sit_page_hit
-WHERE
-        creation_date >= ( SYSDATE - 1/24 )
-GROUP BY
-        TRUNC( creation_date, 'MI' )
-ORDER BY
-        TRUNC( creation_date, 'MI' ) ASC
