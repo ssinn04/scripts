@@ -34,17 +34,14 @@ node.default['sshfile_priv'] = [
 ]
 
 ssh_pub = data_bag_item('user_secure', 'user_public')
-node.default['sshfile'].each do |f|
-  pubsrc  = f[0]
-  pubdst  = f[1]
-  pubperm = f[2]
-  template "/home/#{username}/.ssh/#{pubdst}" do
+node.default['sshfile'].each do |source, target, permissions|
+  template "/home/#{username}/.ssh/#{target}" do
     source "ssh_pub.erb"
     owner "#{username}"
     group "#{groupname}"
-    mode  "#{pubperm}"
+    mode  permissions
       variables ({
-      :ssh_value => "#{ssh_pub[ "#{pubsrc}" ]}"
+      :ssh_value => ssh_pub[source]
       })
   end
   # Update authorized_keys if the public key is missing
@@ -54,7 +51,7 @@ node.default['sshfile'].each do |f|
     group  "#{groupname}"
     mode   "0640"
       variables ({
-      :ssh_value => "#{ssh_pub[ "#{pubsrc}" ]}"
+      :ssh_value => ssh_pub[source]
       })
     action :create
   end
@@ -63,17 +60,14 @@ end
 if File.exist?("#{node['user_secure']}")
   ssh_secret = Chef::EncryptedDataBagItem.load_secret("#{node['user_secure']}")
   ssh_cred  =  Chef::EncryptedDataBagItem.load('user_secure', 'user_private', ssh_secret)
-  node.default['sshfile_priv'].each do |f|
-    prvsrc  = f[0]
-    prvdst  = f[1]
-    prvperm = f[2]
-    template "/home/#{username}/.ssh/#{prvdst}" do
+  node.default['sshfile_priv'].each do |source, target, permissions|
+    template "/home/#{username}/.ssh/#{target}" do
       source "ssh_prv.erb"
       owner "#{username}"
       group "#{groupname}"
-      mode  "#{prvperm}"
+      mode  permissions
         variables ({
-        :ssh_value => "#{ssh_cred[ "#{prvsrc}" ]}"
+        :ssh_value => ssh_cred[source]
         })
     end
   end
