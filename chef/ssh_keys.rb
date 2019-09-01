@@ -13,9 +13,7 @@ node.default['sshconfig'] = [
   [ 'config', '0644' ]
 ]
 
-node.default['sshconfig'].each do |f|
-  filename = f[0]
-  filemode = f[1]
+node.default['sshconfig'].each do |filename, filemode|
   cookbook_file "/home/#{username}/.ssh/#{filename}" do
     source "#{filename}"
     owner "#{username}"
