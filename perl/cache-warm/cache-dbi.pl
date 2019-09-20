@@ -196,6 +196,6 @@ Retrieves the top 10 most requested URIs for he hosts listed in foo and writes t
 
 =head3 AUTHOR
 
-Spencer J Sinn <ssinn@digitalriver.com>
+Spencer J Sinn <spencer.sinn@gmail.com>
 
 =cut
