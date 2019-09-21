@@ -52,7 +52,7 @@ This is used to update the system database. Its default behaviour is to create a
 
 =head2 AUTHOR
 
-Spencer J Sinn <ssinn@digitalriver.com>
+Spencer J Sinn <spencer.sinn@gmail.com>
 
 =cut
 

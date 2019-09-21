@@ -47,7 +47,7 @@ Default: None
 Default: None
 
 =head2 AUTHOR
-Spencer J Sinn <ssinn@digitalriver.com>
+Spencer J Sinn <spencer.sinn@gmail.com>
 
 =cut
 
