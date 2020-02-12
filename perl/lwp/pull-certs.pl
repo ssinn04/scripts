@@ -5,6 +5,7 @@ use warnings;
 
 use Data::Dumper;
 use Getopt::Long;
+use Pod::Usage;
 
 use LWP;
 use LWP::Simple;
@@ -13,6 +14,7 @@ use URI::URL;
 
 use Tie::File;
 
+my $hostname;
 my $hostfile;
 my $outfile;
 my $help;
@@ -21,12 +23,43 @@ my $verbose;
 my @uri;
 my $uri_host;
 
+=pod
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+This is used to retrieve the host certificates from a user-defined group of hosts.
+
+=head2 OPTIONS
+
+=over
+
+=item B<-H,  --hostfile=<file.txt>>     - File containing the FQDNs to scan
+
+=item B<-o,  --outfilei=<outfile.txt>>      - File to print results
+
+=item B<-v,  --verbose>      - Print more information
+
+=item B<-h,  --help>         - Print this cruft
+
+=back
+
+=head2 AUTHOR
+
+Spencer J Sinn <spencer.sinn@gmail.com>
+
+=cut
+
+
 Getopt::Long::Configure ( 'auto_help', 'bundling' );
+
 GetOptions (
-  'H|hostfile'   => \$hostfile,
-  'o|outfile'    => \$outfile,
-  'h|help'       => \$help,
-  'v|verbose'    => \$verbose,
+  't|target=s'     => \$hostname,
+  'H|hostfile=s'   => \$hostfile,
+  'o|outfile=s'    => \$outfile,
+  'h|help'         => \$help,
+  'v|verbose'      => \$verbose,
 ) or warn pod2usage(2);
 
 # help
@@ -43,10 +76,15 @@ unless ($outfile) {
   $outfile="response.txt";
   };
 
-our $hostname = shift or die "Syntax: $0 hostname\n";
+# If $hostname isn't called or defined, default to $hostfile
+# If $hostfile doesn't exist or is unreadle, exit with some error.
+# Create an option to test the validity of the hostname before connecting
+# Create an 'its alive' option before connecting
+
 if ($verbose) {
   print Dumper("Hostname:    ".$hostname);
 };
+
 our $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0}, );
 if ($verbose) {
   print Dumper($ua);
