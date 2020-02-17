@@ -14,6 +14,38 @@ outfile="outfile.txt"
 
 # Include
 
+# Definitions
+# subroutine to scan a range of addresses
+# This expects a CIDR block as an input
+def scanRange(net_addr):
+  print("net_addr    ", net_addr)
+  # Create the network
+  ip_net = ipaddress.ip_network(net_addr, strict=False)
+  print("ip_net    ", ip_net)
+  for host in ip_net.hosts():
+    print (host)
+  
+  if args.verbose:
+    log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
+    log.info("net_addr:    ", net_addr)
+    log.info("ip_net  :    ", ip_net)
+  else:
+    log.basicConfig(format="%(levelname)s: %(message)s")
+
+  # Get all hosts on that network
+  all_hosts = list(ip_net.hosts())
+  
+  # For each IP address in the subnet, 
+  # run the ping command with subprocess.popen interface
+  for i in range(len(all_hosts)):
+      output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])], stdout=subprocess.PIPE, startupinfo=None).communicate()[0]
+      if "Destination host unreachable" in output.decode('utf-8'):
+          print(str(all_hosts[i]), "is Offline")
+      elif "Request timed out" in output.decode('utf-8'):
+          print(str(all_hosts[i]), "is Offline")
+      else:
+          print(str(all_hosts[i]), "is Online")
+
 # Read file containing subnets
 # Do we use CIDR format?
 # Do we want unique IP addresses?
@@ -33,8 +65,10 @@ args = parser.parse_args()
 # Some sanity tests
 # If no arguments are provided, help and exit
 if args.cidr:
-  net_addr = args.cidr
-  scanRange(net_addr)
+  #net_addr = args.cidr
+  #print("net_addr    ", net_addr)
+  print("args.cidr    ", args.cidr)
+  scanRange(args.cidr)
 elif args.singleton:
   net_addr = args.singleton
 elif args.infile:
@@ -49,31 +83,6 @@ if args.verbose:
 else:
   log.basicConfig(format="%(levelname)s: %(message)s")
 
-# subroutine to scan a range of addresses
-def scanRange():
-  # Create the network
-  ip_net = ipaddress.ip_network(net_addr, strict=False)
-  for host in ip_net.hosts():
-    print (host)
-  
-  # Get all hosts on that network
-  all_hosts = list(ip_net.hosts())
-  
-  # Configure subprocess to hide the console window
-  info = subprocess.STARTUPINFO()
-  info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-  info.wShowWindow = subprocess.SW_HIDE
-  
-  # For each IP address in the subnet, 
-  # run the ping command with subprocess.popen interface
-  for i in range(len(all_hosts)):
-      output = subprocess.Popen(['ping', '-n', '1', '-w', '500', str(all_hosts[i])], stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
-      if "Destination host unreachable" in output.decode('utf-8'):
-          print(str(all_hosts[i]), "is Offline")
-      elif "Request timed out" in output.decode('utf-8'):
-          print(str(all_hosts[i]), "is Offline")
-      else:
-          print(str(all_hosts[i]), "is Online")
 
 # TODO
 # All a comma-seperated range as an input
