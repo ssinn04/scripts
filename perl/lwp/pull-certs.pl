@@ -3,6 +3,10 @@
 use strict;
 use warnings;
 
+# Include our local CA bundle
+#$ENV{HTTPS_CA_FILE} = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem";
+$ENV{HTTPS_CA_FILE} = "/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt";
+
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
@@ -14,6 +18,7 @@ use URI::URL;
 
 use Tie::File;
 
+# OPTIONS variables
 my $hostname;
 my $hostfile;
 my $outfile;
@@ -35,13 +40,15 @@ This is used to retrieve the host certificates from a user-defined group of host
 
 =over
 
-=item B<-H,  --hostfile=<file.txt>>     - File containing the FQDNs to scan
+=item B<-t,  --target=<hostname>>          - The target hostname
 
-=item B<-o,  --outfilei=<outfile.txt>>      - File to print results
+=item B<-H,  --hostfile=<file.txt>>        - File containing the FQDNs to scan
 
-=item B<-v,  --verbose>      - Print more information
+=item B<-o,  --outfile=<outfile.txt>>      - File to print results
 
-=item B<-h,  --help>         - Print this cruft
+=item B<-v,  --verbose>                    - Print more information
+
+=item B<-h,  --help>                       - Print this cruft
 
 =back
 
@@ -85,21 +92,27 @@ if ($verbose) {
   print Dumper("Hostname:    ".$hostname);
 };
 
-our $ua = LWP::UserAgent->new(ssl_opts => { verify_hostname => 0}, );
+my $ua = LWP::UserAgent->new(
+  ssl_opts => { verify_hostname => 1},
+  protocols_allowed => ['https'],
+  );
 if ($verbose) {
   print Dumper($ua);
 };
-our $req = HTTP::Request->new(HEAD => "https://$hostname");
+
+my $request = HTTP::Request->new(HEAD => 'https://'.$hostname);
 if ($verbose) {
-  print Dumper($req);
-};
-our $resp = $ua->request($req);
-if ($verbose) {
-  print Dumper($resp);
+  print Dumper($request);
 };
 
-print "           Site: ", $resp->header('Client-SSL-Cert-Subject'), "\n";
-print "Cert. Authority: ", $resp->header('Client-SSL-Cert-Issuer'), "\n";
-print "         Cipher: ", $resp->header('Client-SSL-Cipher'), "\n";
+my $response = $ua->request($request);
+print $response->content, "\n";
+if ($verbose) {
+  print Dumper($response);
+};
+
+print "           Site: ", $response->header('Client-SSL-Cert-Subject'), "\n";
+print "Cert. Authority: ", $response->header('Client-SSL-Cert-Issuer'), "\n";
+print "         Cipher: ", $response->header('Client-SSL-Cipher'), "\n";
 
 __END__
