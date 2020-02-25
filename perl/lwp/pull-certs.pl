@@ -5,15 +5,21 @@ use warnings;
 
 # Include our local CA bundle
 #$ENV{HTTPS_CA_FILE} = "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem";
-$ENV{HTTPS_CA_FILE} = "/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt";
+#$ENV{HTTPS_CA_FILE} = "/etc/pki/ca-trust/extracted/openssl/ca-bundle.trust.crt";
 
 use Data::Dumper;
 use Getopt::Long;
 use Pod::Usage;
 
+use Net::SSL;
+use Net::SSL::ExpireDate;
+
 use LWP;
 use LWP::Simple;
 use LWP::UserAgent;
+use LWP::Protocol::https;
+
+use Mozilla::CA;
 use URI::URL;
 
 use Tie::File;
@@ -27,6 +33,8 @@ my $verbose;
 
 my @uri;
 my $uri_host;
+
+my $date="fubar";
 
 =pod
 
@@ -93,8 +101,9 @@ if ($verbose) {
 };
 
 my $ua = LWP::UserAgent->new(
-  ssl_opts => { verify_hostname => 1},
-  protocols_allowed => ['https'],
+  ssl_opts => { SSL_ca_path     => '/etc/ssl/certs',
+                verify_hostname => 0,
+              },
   );
 if ($verbose) {
   print Dumper($ua);
@@ -111,8 +120,18 @@ if ($verbose) {
   print Dumper($response);
 };
 
+my $ed = Net::SSL::ExpireDate->new( https => $hostname );
+if (defined $ed->expire_date) {
+  $date = $ed->expire_date;
+  if ($verbose) {
+    print Dumper($ed);
+    print Dumper($date);
+  };
+};
+
 print "           Site: ", $response->header('Client-SSL-Cert-Subject'), "\n";
 print "Cert. Authority: ", $response->header('Client-SSL-Cert-Issuer'), "\n";
 print "         Cipher: ", $response->header('Client-SSL-Cipher'), "\n";
+print "           Date: ", $date, "\n";
 
 __END__
