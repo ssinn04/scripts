@@ -97,11 +97,11 @@ def _get_argparser():
 #  parser.print_help() 
 #  sys.exit()
 
-if args.verbose:
-  log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
-  log.info("CIDR:    ", args.cidr)
-else:
-  log.basicConfig(format="%(levelname)s: %(message)s")
+  if args.verbose:
+    log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
+    log.info("CIDR:    ", args.cidr)
+  else:
+    log.basicConfig(format="%(levelname)s: %(message)s")
 
 if __name__ == "__main__":
   main()
